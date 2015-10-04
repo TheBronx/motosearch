@@ -57,9 +57,9 @@ function saveFiles(ads) {
         toCVSFile += ad.toString() + '\n';
     }
     
-    fs.writeFileSync('ads.json', JSON.stringify(controlFile), 'utf8');
+    fs.writeFileSync(__dirname + '/ads.json', JSON.stringify(controlFile), 'utf8');
     var date = new Date();
     var dateStr = date.getDate() + '-' + (date.getMonth()+1) + ' ' 
                 + date.getHours() + ':' + date.getMinutes();
-    fs.writeFileSync('snapshot-' + dateStr + '.csv', toCVSFile, 'utf8');
+    fs.writeFileSync(__dirname + '/snapshots/snapshot-' + dateStr + '.csv', toCVSFile, 'utf8');
 }
