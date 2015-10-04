@@ -1,5 +1,11 @@
 var async = require('async'),
-    fs = require('fs');
+    fs = require('fs'),
+    nodemailer = require('nodemailer');
+var mailer = nodemailer.createTransport();
+var mailConfig = {
+    'from': 'from@mail.com',
+    'to': 'to@mail.com'
+};
 
 var segundamano = require('./segundamano');
 var motosnet = require('./motos.net');
@@ -41,10 +47,22 @@ function sendNotifications(ads) {
 
 function notifyNewAd(newad) {
     console.log('ad ' + newad.id + ' is new!');
+    mailer.sendMail({
+        from: mailConfig.from,
+        to: mailConfig.to,
+        subject: 'Nueva moto anunciada',
+        text: 'Nueva moto anunciada en ' + newad.site + ' por ' + newad.price + '€: ' + newad.link
+    });
 }
 
 function notifyPriceChange(ad, previousPrice) {
     console.log('ad ' + ad.id + ' has new price! ' + previousPrice + ' -> ' + ad.price);
+    mailer.sendMail({
+        from: mailConfig.from,
+        to: mailConfig.to,
+        subject: 'Cambio de precio',
+        text: 'Una moto ha cambiado de precio: antes ' + previousPrice + '€, ahora: ' + ad.price + '€. ' + ad.link
+    });
 }
 
 function saveFiles(ads) {
