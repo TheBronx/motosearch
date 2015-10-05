@@ -1,0 +1,7 @@
+{
+  "mail": {
+    "enabled": false,
+    "from": "from@mail.com",
+    "to": "to@mail.com"
+  }
+}

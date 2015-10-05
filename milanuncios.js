@@ -2,6 +2,8 @@ var request = require('request'),
     cheerio = require('cheerio'),
     Moto = require('./Moto');
 
+var site = 'milanuncios';
+
 var options = {
     url: 'http://www.milanuncios.com/motos-de-carretera/gt.htm?marca=BMW&ccd=800&cch=800',
     headers: {
@@ -10,16 +12,23 @@ var options = {
         'Accept-Language':'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3',
         'Referer': 'http://www.milanuncios.com/motos-de-carretera/gt.htm?marca=BMW&ccd=800&cch=800'
     }
-}
+};
 
 function retrieveAds(callback) {
     var ads = [];
     request(options, function(err, resp, body) {
         if (err) {
-            return callback(err);
+            return callback(null, {
+                'site': site,
+                'error': true,
+                'ads': ads
+            });
         }
-        
+
         $ = cheerio.load(body);
+
+        var error = $('.nohayanuncios').length > 0;
+        if (error) console.log('Milanuncios returned 0 results :(');
         
         $('.x1').each(function() {
             var title = $(this).find('a.cti').text().trim();
@@ -29,7 +38,7 @@ function retrieveAds(callback) {
             var adId = link.match(/-(\d+)\.htm/)[1];
             
             var moto = new Moto({
-                'site': 'milanuncios',
+                'site': site,
                 'title': title,
                 'price': price,
                 'link': 'http://www.milanuncios.com/motos-de-carretera/' + link,
@@ -39,7 +48,11 @@ function retrieveAds(callback) {
             ads.push(moto);
         });
         
-        callback(null, ads);
+        callback(null, {
+            'site': site,
+            'error': error,
+            'ads': ads
+        });
     });
 }
 

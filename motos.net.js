@@ -2,6 +2,8 @@ var request = require('request'),
     cheerio = require('cheerio'),
     Moto = require('./Moto');
 
+var site = 'motos.net';
+
 var options = {
     url: 'http://motos.coches.net/ocasion/bmw/f_800_gt/',
     headers: {
@@ -10,13 +12,17 @@ var options = {
         'Accept-Language':'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3',
         'Referer': 'http://motos.coches.net/ocasion/bmw/f_800_gt/'
     }
-}
+};
 
 function retrieveAds(callback) {
     var ads = [];
     request(options, function(err, resp, body) {
         if (err) {
-            return callback(err);
+            return callback(null, {
+                'site': site,
+                'error': true,
+                'ads': ads
+            });
         }
         
         $ = cheerio.load(body);
@@ -30,7 +36,7 @@ function retrieveAds(callback) {
             var adId = adIdAndSomeShit.split('|')[0];
             
             var moto = new Moto({
-                'site': 'motos.net',
+                'site': site,
                 'title': title,
                 'price': price,
                 'link': 'http://motos.coches.net' + link,
@@ -39,8 +45,12 @@ function retrieveAds(callback) {
             });
             ads.push(moto);
         });
-        
-        callback(null, ads);
+
+        callback(null, {
+            'site': site,
+            'error': false,
+            'ads': ads
+        });
     });
 }
 

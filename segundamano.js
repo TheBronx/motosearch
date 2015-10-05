@@ -2,6 +2,8 @@ var request = require('request'),
     cheerio = require('cheerio'),
     Moto = require('./Moto');
 
+var site = 'segundamano';
+
 var options = {
     url: 'http://www.segundamano.es/motos-bmw-de-segunda-mano-toda-espana/f-800-gt.htm?sort_by=1&od=1',
     headers: {
@@ -10,13 +12,17 @@ var options = {
         'Accept-Language':'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3',
         'Referer': 'http://www.segundamano.es/motos-bmw-de-segunda-mano-toda-espana/f-800-gt.htm?sort_by=1&od=1'
     }
-}
+};
 
 function retrieveAds(callback) {
     var ads = [];
     request(options, function(err, resp, body) {
         if (err) {
-            return callback(err);
+            return callback(null, {
+                'site': site,
+                'error': true,
+                'ads': ads
+            });
         }
         
         $ = cheerio.load(body);
@@ -29,7 +35,7 @@ function retrieveAds(callback) {
             var id = link.match(/\/(a[0-9]+)\//)[1];
             
             var moto = new Moto({
-                'site': 'segundamano',
+                'site': site,
                 'title': title,
                 'price': price,
                 'link': link,
@@ -38,8 +44,12 @@ function retrieveAds(callback) {
             });
             ads.push(moto);
         });
-        
-        callback(null, ads);
+
+        callback(null, {
+            'site': site,
+            'error': false,
+            'ads': ads
+        });
     });
 }
 

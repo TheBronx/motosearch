@@ -1,27 +1,23 @@
-var config = {
-    'mail': {
-        'enabled': false,
-        'from': 'from@mail.com',
-        'to': 'to@mail.com'
-    }
-};
+var config = require('./config.json'),
+    savedAds = require('./ads.json');
 
 var async = require('async'),
     fs = require('fs'),
     nodemailer = require('nodemailer');
 var mailer = nodemailer.createTransport();
 
+var Moto = require('./Moto');
 var segundamano = require('./segundamano');
 var motosnet = require('./motos.net');
 var milanuncios = require('./milanuncios');
-
-var savedAds = require('./ads.json');
 
 async.series([
         segundamano.retrieveAds,
         motosnet.retrieveAds,
         milanuncios.retrieveAds
     ], function(err, results) {
+        if (err) return console.log(err);
+
         var ads = getAdsFromResults(results);
         
         sendNotifications(ads);
@@ -31,12 +27,36 @@ async.series([
 function getAdsFromResults(results) {
     var ads = [];
     for (var i=0; i<results.length; i++) {
-        for (var j=0; j<results[i].length; j++) {
-            var ad = results[i][j];
-            ads.push(ad);
+        if (results[i].error) {
+            //sometimes Milanuncios returns no results (error). If that happens, I don't want to save 0 results
+            //cause later when the search starts working again, I'm going to notify about 'new ads' that are not new
+            //So, lets just save the same results that we got the last time, instead of 0.
+            var previousAds = getPreviousAdsForSite(results[i].site);
+            ads = ads.concat(previousAds);
+        } else {
+            for (var j=0; j<results[i].ads.length; j++) {
+                var ad = results[i].ads[j];
+                ads.push(ad);
+            }
         }
     }
     return ads;
+}
+
+function getPreviousAdsForSite(site) {
+    var previousAds = [];
+    for (var adId in savedAds) {
+        if (adId.indexOf(site) != -1) {
+            //we only have ID and PRICE of the AD, so we can't create a real Moto but it will be enough
+            var moto = new Moto({});
+            moto.site = site;
+            moto.id = adId;
+            moto.price = savedAds[adId];
+
+            previousAds.push(moto);
+        }
+    }
+    return previousAds;
 }
 
 function sendNotifications(ads) {

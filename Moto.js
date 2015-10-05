@@ -1,12 +1,12 @@
 'use strict';
 
 module.exports = function (options) {
-    this.site = options.site;
-    this.title = options.title;
-    this.price = parsePrice(options.price);
-    this.link = options.link;
-    this.date = parseDate(options.date);
-    this.id = this.site + '-' + options.id;
+    this.site = options.site || '';
+    this.title = options.title || '';
+    this.price = parsePrice(options.price || '');
+    this.link = options.link || '';
+    this.date = parseDate(options.date || '');
+    this.id = this.site + '-' + (options.id || '');
     
     this.toString = function() {
         return this.id + ',' + this.price + ',' + this.date + ',' + this.title.replace(/,/gi, '') + ',' + this.link;
