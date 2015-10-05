@@ -10,10 +10,10 @@ module.exports = function (options) {
     
     this.toString = function() {
         return this.id + ',' + this.price + ',' + this.date + ',' + this.title.replace(/,/gi, '') + ',' + this.link;
-    }
+    };
     
     return this;
-}
+};
 
 function parsePrice(price) {
     return parseInt(price.replace(/[\.b]/gi, ''), 10);
@@ -42,8 +42,14 @@ function parseDate(strDate) {
     strDate = strDate.replace(' oct', '/10');
     strDate = strDate.replace(' nov', '/11');
     strDate = strDate.replace(' dic', '/12');
-    
-    return parseNormalizedDate(strDate);
+
+    try {
+        var parsedDate = parseNormalizedDate(strDate);
+    } catch (err) {
+        console.log('Error parsing date: ' + strDate);
+        parsedDate = 'Invalid Date';
+    }
+    return parsedDate;
 }
 
 function parseNormalizedDate(strDate) {
