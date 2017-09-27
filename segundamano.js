@@ -5,12 +5,12 @@ var request = require('request'),
 var site = 'segundamano';
 
 var options = {
-    url: 'http://www.segundamano.es/motos-bmw-de-segunda-mano-toda-espana/f-800-gt.htm?sort_by=1&od=1',
+    url: 'https://www.vibbo.com/motos-bmw-de-segunda-mano-toda-espana/f-800-gt.htm?sort_by=1&od=1',
     headers: {
         'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0',
         'Accept': '*/*',
         'Accept-Language':'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3',
-        'Referer': 'http://www.segundamano.es/motos-bmw-de-segunda-mano-toda-espana/f-800-gt.htm?sort_by=1&od=1'
+        'Referer': 'https://www.vibbo.com/motos-bmw-de-segunda-mano-toda-espana/f-800-gt.htm?sort_by=1&od=1'
     }
 };
 
@@ -26,8 +26,7 @@ function retrieveAds(callback) {
         }
         
         $ = cheerio.load(body);
-        
-        $('#list_ads_table_container .list_ads_row').each(function() {
+        $('.list_ads_row').each(function() {
             var title = $(this).find('.subjectTitle').text().trim();
             var price = $(this).find('.subjectPrice').text().trim();
             var date = $(this).find('.dateLink').text().trim();

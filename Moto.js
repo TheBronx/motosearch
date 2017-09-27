@@ -46,7 +46,7 @@ function parseDate(strDate) {
     try {
         var parsedDate = parseNormalizedDate(strDate);
     } catch (err) {
-        console.log('Error parsing date: ' + strDate);
+        console.log('Error parsing date: ' + strDate + ": " + err);
         parsedDate = 'Invalid Date';
     }
     return parsedDate;
@@ -59,9 +59,11 @@ function parseNormalizedDate(strDate) {
     var day = dayAndMonth[0];
     var month = dayAndMonth[1];
     
-    var hoursAndMinutes = dateAndHour[1].split(':');
-    var hours = hoursAndMinutes[0];
-    var minutes = hoursAndMinutes[1];
+	if (dateAndHour.length==1) dateAndHour.push("00:00"); //in case the date does not contain hour:minute
+
+	var hoursAndMinutes = dateAndHour[1].split(':');
+	var hours = hoursAndMinutes[0];
+	var minutes = hoursAndMinutes[1];
     
     var date = new Date();
     date.setDate(day);
