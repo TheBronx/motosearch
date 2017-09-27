@@ -47,7 +47,10 @@ function retrieveAds(callback) {
                 'id': adId,
                 'date': translateRelativeDate(date)
             });
-            ads.push(moto);
+			
+			if (!isNaN(moto.price)) {
+				ads.push(moto);
+			}
         });
         
         callback(null, {
