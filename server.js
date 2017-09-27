@@ -19,7 +19,7 @@ async.series([
         if (err) return console.log(err);
 
         var ads = getAdsFromResults(results);
-        
+
         sendNotifications(ads);
         saveFiles(ads);
 });
@@ -62,7 +62,7 @@ function getPreviousAdsForSite(site) {
 function sendNotifications(ads) {
     for (var i=0; i<ads.length; i++) {
         var ad = ads[i];
-        
+
         if (!savedAds[ad.id]) {
             notifyNewAd(ad);
         } else if (savedAds[ad.id] != ad.price) {
@@ -78,7 +78,10 @@ function notifyNewAd(newad) {
             from: config.mail.from,
             to: config.mail.to,
             subject: 'Nueva moto anunciada',
-            text: 'Nueva moto anunciada en ' + newad.site + ' por ' + newad.price + '€: ' + newad.link
+            text: 'Nueva moto anunciada en ' + newad.site + '\n' +
+              'Precio: ' + newad.price + '€' + '\n' +
+              'Km: ' + newad.km + '\n' +
+              newad.link
         });
     }
 }
@@ -90,7 +93,10 @@ function notifyPriceChange(ad, previousPrice) {
             from: config.mail.from,
             to: config.mail.to,
             subject: 'Cambio de precio',
-            text: 'Una moto ha cambiado de precio: antes ' + previousPrice + '€, ahora: ' + ad.price + '€. ' + ad.link
+            text: 'Una moto ha cambiado de precio en ' + ad.site + '\n' +
+              'Precio: ' + ad.price + '€ (antes ' + previousPrice + '€)' + '\n' +
+              'Km: ' + ad.km + '\n' +
+              ad.link
         });
     }
 }
@@ -98,16 +104,16 @@ function notifyPriceChange(ad, previousPrice) {
 function saveFiles(ads) {
     var controlFile = {};
     var toCVSFile = '';
-    
+
     for (var i=0; i<ads.length; i++) {
         var ad = ads[i];
         controlFile[ad.id] = ad.price;
         toCVSFile += ad.toString() + '\n';
     }
-    
+
     fs.writeFileSync(__dirname + '/ads.json', JSON.stringify(controlFile), 'utf8');
     var date = new Date();
-    var dateStr = date.getDate() + '-' + (date.getMonth()+1) + ' ' 
-                + date.getHours() + ':' + date.getMinutes();
+    var dateStr = date.getDate() + '-' + (date.getMonth()+1) + ' ' +
+                  date.getHours() + ':' + date.getMinutes();
     fs.writeFileSync(__dirname + '/snapshots/snapshot-' + dateStr + '.csv', toCVSFile, 'utf8');
 }

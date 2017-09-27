@@ -24,7 +24,7 @@ function retrieveAds(callback) {
                 'ads': ads
             });
         }
-        
+
         $ = cheerio.load(body);
         $('.list_ads_row').each(function() {
             var title = $(this).find('.subjectTitle').text().trim();
@@ -32,14 +32,16 @@ function retrieveAds(callback) {
             var date = $(this).find('.dateLink').text().trim();
             var link = $(this).find('.subjectTitle').attr('href').trim();
             var id = link.match(/\/(a[0-9]+)\//)[1];
-            
+            var km = $(this).find('.add-info .infoBottom').text().trim().replace(/.*?\-\s(.*?)\skm/, '$1');
+
             var moto = new Moto({
                 'site': site,
                 'title': title,
                 'price': price,
                 'link': link,
                 'id': id,
-                'date': date
+                'date': date,
+                'km': km
             });
             ads.push(moto);
         });

@@ -24,9 +24,9 @@ function retrieveAds(callback) {
                 'ads': ads
             });
         }
-        
+
         $ = cheerio.load(body);
-        
+
         $('#rows .lnkad').each(function() {
             var title = $(this).find('h2').text().trim();
             var price = $(this).find('.preu').text().trim();
@@ -34,14 +34,16 @@ function retrieveAds(callback) {
             var link = $(this).attr('href').trim();
             var adIdAndSomeShit = $(this).parent().find('.contact-ad').data('t');
             var adId = adIdAndSomeShit.split('|')[0];
-            
+            var km = $(this).find('.dades .d1').text().trim().replace(' km', '');
+
             var moto = new Moto({
                 'site': site,
                 'title': title,
                 'price': price,
                 'link': 'http://motos.coches.net' + link,
                 'id': adId,
-                'date': date
+                'date': date,
+                'km': km
             });
             ads.push(moto);
         });
