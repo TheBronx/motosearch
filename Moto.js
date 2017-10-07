@@ -8,9 +8,10 @@ module.exports = function (options) {
     this.date = parseDate(options.date || '');
     this.id = this.site + '-' + (options.id || '');
     this.km = parseKm(options.km || '');
+    this.year = options.year || '';
 
     this.toString = function() {
-        return this.id + ',' + this.price + ',' + this.km + ',' + this.date + ',' + this.title.replace(/,/gi, '') + ',' + this.link;
+        return this.id + ',' + this.price + ',' + this.year + ',' + this.km + ',' + this.date + ',' + this.title.replace(/,/gi, '') + ',' + this.link;
     };
 
     return this;

@@ -81,6 +81,7 @@ function notifyNewAd(newad) {
             text: 'Nueva moto anunciada en ' + newad.site + '\n' +
               'Precio: ' + newad.price + '€' + '\n' +
               'Km: ' + newad.km + '\n' +
+              'Año: ' + newad.year + '\n' +
               newad.link
         });
     }
@@ -96,6 +97,7 @@ function notifyPriceChange(ad, previousPrice) {
             text: 'Una moto ha cambiado de precio en ' + ad.site + '\n' +
               'Precio: ' + ad.price + '€ (antes ' + previousPrice + '€)' + '\n' +
               'Km: ' + ad.km + '\n' +
+              'Año: ' + newad.year + '\n' +
               ad.link
         });
     }

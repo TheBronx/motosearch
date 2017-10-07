@@ -63,6 +63,7 @@ function retrieveAdsPage(page, callback) {
             var adIdAndSomeShit = $(this).parent().find('.contact-ad').data('t');
             var adId = adIdAndSomeShit.split('|')[0];
             var km = $(this).find('.dades .d1').text().trim().replace(' km', '');
+            var year = $(this).find('.dades .d2').text().trim();
 
             var moto = new Moto({
                 'site': site,
@@ -71,7 +72,8 @@ function retrieveAdsPage(page, callback) {
                 'link': 'http://motos.coches.net' + link,
                 'id': adId,
                 'date': date,
-                'km': km
+                'km': km,
+                'year': year
             });
             ads.push(moto);
         });
