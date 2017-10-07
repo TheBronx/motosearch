@@ -39,20 +39,22 @@ function retrieveAds(callback) {
 						var link = $(this).find('a.aditem-detail-title').attr('href').trim();
 						var adId = link.match(/-(\d+)\.htm/)[1];
 						var km = $(this).find('.x11 .kms').text().trim().replace(' kms', '');
+						var year = $(this).find('.x11 .ano').text().trim().replace('año ', '');
 
 						var moto = new Moto({
 								'site': site,
 								'title': title,
 								'price': price,
-								'link': 'http://www.milanuncios.com/motos-de-carretera/' + link,
+								'link': 'https://www.milanuncios.com/motos-de-carretera/' + link,
 								'id': adId,
 								'date': translateRelativeDate(date),
-								'km': km
+								'km': km,
+								'year': year
 						});
 
-			if (!isNaN(moto.price)) {
-				ads.push(moto);
-			}
+						if (!isNaN(moto.price)) {
+							ads.push(moto);
+						}
 				});
 
 				callback(null, {
