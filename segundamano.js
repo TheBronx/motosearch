@@ -33,6 +33,8 @@ function retrieveAds(callback) {
             var link = $(this).find('.subjectTitle').attr('href').trim();
             var id = link.match(/\/(a[0-9]+)\//)[1];
             var km = $(this).find('.add-info .infoBottom').text().trim().replace(/.*?\-\s(.*?)\skm/, '$1');
+            var year = $(this).find('.add-info .infoBottom').text().trim().replace(/[\s\S]*?año\s(\d+)/, '$1');
+            // [\s\S]* means "spaces and no spaces". this is like .* but matching also line breaks. so this is a "multiline regex"
 
             var moto = new Moto({
                 'site': site,
@@ -41,7 +43,8 @@ function retrieveAds(callback) {
                 'link': link,
                 'id': id,
                 'date': date,
-                'km': km
+                'km': km,
+                'year': year
             });
             ads.push(moto);
         });
