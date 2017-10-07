@@ -5,7 +5,7 @@ var request = require('request'),
 var site = 'motos.net';
 
 var options = {
-    url: 'http://motos.coches.net/ocasion/bmw/f_800_gt/',
+    url: 'http://motos.coches.net/ocasion/bmw/f_800_gt/?pg={page}&Version=f%20800%20gt&fi=SortDate',
     headers: {
         'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0',
         'Accept': '*/*',
@@ -15,8 +15,36 @@ var options = {
 };
 
 function retrieveAds(callback) {
+    retrieveAdsAllPages(1, null, callback);
+}
+
+function retrieveAdsAllPages(page, allData, callback) {
+    retrieveAdsPage(page, function(error, data) {
+        if (error) {
+            if (allData) return callback(null, allData);
+            else return callback(error);
+        }
+
+        if (allData) {
+            allData.ads = allData.ads.concat(data.ads);
+        } else {
+            allData = data;
+        }
+
+        retrieveAdsAllPages(page + 1, allData, callback);
+    });
+}
+
+function requestParams(page) {
+    return {
+        url: options.url.replace('{page}', page),
+        headers: options.headers
+    };
+}
+
+function retrieveAdsPage(page, callback) {
     var ads = [];
-    request(options, function(err, resp, body) {
+    request(requestParams(page), function(err, resp, body) {
         if (err) {
             return callback(null, {
                 'site': site,
@@ -48,11 +76,14 @@ function retrieveAds(callback) {
             ads.push(moto);
         });
 
-        callback(null, {
-            'site': site,
-            'error': false,
-            'ads': ads
-        });
+        if (ads.length == 0) return callback(new Error('No ads'));
+        else {
+            callback(null, {
+                'site': site,
+                'error': false,
+                'ads': ads
+            });
+        }
     });
 }
 
