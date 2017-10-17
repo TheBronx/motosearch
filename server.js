@@ -97,7 +97,7 @@ function notifyPriceChange(ad, previousPrice) {
             text: 'Una moto ha cambiado de precio en ' + ad.site + '\n' +
               'Precio: ' + ad.price + '€ (antes ' + previousPrice + '€)' + '\n' +
               'Km: ' + ad.km + '\n' +
-              'Año: ' + newad.year + '\n' +
+              'Año: ' + ad.year + '\n' +
               ad.link
         });
     }
