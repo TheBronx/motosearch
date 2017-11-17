@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Motosearch historic</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+
+<div id="chart"></div>
+
+<script>
+fetch('historic.json')
+  .then(response => response.json())
+  .then(json => {
+    drawChart(json);
+  });
+
+function valuePoints(prices) {
+  var points = [];
+
+  prices.forEach(price => {
+    points.push([
+      new Date(price.date).getTime(),
+      price.price
+    ]);
+  });
+
+  return points;
+}
+
+function convertToChartSeries(json) {
+  var series = [];
+  for (var k in json) {
+    series.push({
+      name: k,
+      data: valuePoints(json[k].prices)
+    });
+  }
+
+  return series;
+}
+
+function drawChart(json) {
+  var columns = convertToChartSeries(json);
+  console.log(columns);
+
+  Highcharts.chart('chart', {
+      chart: {
+          type: 'spline',
+          height: 800
+      },
+      title: {
+          text: 'F800GT Prices over time'
+      },
+      subtitle: {
+          text: 'Evolution of prices over time'
+      },
+      xAxis: {
+          type: 'datetime',
+          dateTimeLabelFormats: { // don't display the dummy year
+              month: '%e. %b',
+              year: '%b'
+          },
+          title: {
+              text: 'Date'
+          }
+      },
+      yAxis: {
+          title: {
+              text: 'Price (€)'
+          },
+          min: 0
+      },
+      tooltip: {
+          headerFormat: '<b>{series.name}</b><br>',
+          pointFormat: '{point.x:%e. %b}: {point.y:.0f}€'
+      },
+
+      plotOptions: {
+          spline: {
+              marker: {
+                  enabled: true
+              }
+          }
+      },
+
+      series: columns
+  });
+}
+</script>
+</body>
+</html>
