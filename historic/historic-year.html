@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8'>
-  <title>Motosearch historic</title>
+  <title>Motosearch historic by year</title>
   <script src="https://code.highcharts.com/highcharts.js"></script>
 </head>
 <body>
@@ -10,7 +10,7 @@
 <div id="chart"></div>
 
 <script>
-fetch('historic.json')
+fetch('historic-year.json')
   .then(response => response.json())
   .then(json => {
     drawChart(json);
@@ -19,13 +19,17 @@ fetch('historic.json')
 function valuePoints(prices) {
   var points = [];
 
-  prices.forEach(price => {
+  for (var k in prices) {
+    var dateParts = k.split('-');
     points.push([
-      new Date(price.date).getTime(),
-      price.price
+      new Date(dateParts[0], dateParts[1]-1, dateParts[2]).getTime(),
+      prices[k].averagePrice
     ]);
-  });
+  }
 
+  points = points.sort(function(a, b) {
+    return a[0] - b[0];
+  });
   return points;
 }
 
@@ -48,13 +52,13 @@ function drawChart(json) {
   Highcharts.chart('chart', {
       chart: {
           type: 'spline',
-          height: 900
+          height: 800
       },
       title: {
-          text: 'BMW F800GT Prices over time'
+          text: 'BMW F800GT Prices by year'
       },
       subtitle: {
-          text: 'Evolution of prices over time'
+          text: 'Evolution of prices by year over time'
       },
       xAxis: {
           type: 'datetime',
@@ -68,7 +72,7 @@ function drawChart(json) {
       },
       yAxis: {
           title: {
-              text: 'Price (€)'
+              text: 'Avg price (€)'
           }
       },
       tooltip: {
