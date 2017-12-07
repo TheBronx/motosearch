@@ -27,7 +27,7 @@ function convertSnapshotsToHistoric(snapshots) {
     var content = fs.readFileSync('./snapshots/' + file, "utf8");
     try {
       var bikes = parseSnapshot(content);
-      addBikesToHistoric(historic, bikes);
+      addBikesToHistoric(historic, bikes, file);
     } catch(err) {
       //old format snapshot probably, ignore bike
     }
@@ -43,9 +43,10 @@ function convertSnapshotsToHistoricByYear(snapshots) {
     var content = fs.readFileSync('./snapshots/' + file, "utf8");
     try {
       var bikes = parseSnapshot(content);
-      addBikesToHistoricByYear(historicByYear, bikes);
+      addBikesToHistoricByYear(historicByYear, bikes, file);
     } catch(err) {
       //old format snapshot probably, ignore bike
+      //console.log(err);
     }
   });
 
@@ -75,7 +76,24 @@ function parseSnapshot(csvContent) {
   );
 }
 
-function addBikesToHistoric(historic, bikes) {
+function snapshotDateFromFile(file) {
+  var fileDate = file.replace('snapshot-', '').replace(/\s.+/, '');
+  var parts = fileDate.split('-');
+  var date = new Date();
+  if (parts.length == 2) { //format without year: 15-12
+    date.setDate(parseInt(parts[0], 10));
+    date.setMonth(parseInt(parts[1], 10) - 1);
+  } else { //format with year: 15-12-2017
+    date.setDate(parseInt(parts[0], 10));
+    date.setMonth(parseInt(parts[1], 10) - 1);
+    date.setYear(parseInt(parts[2], 10));
+  }
+
+  return date;
+}
+
+function addBikesToHistoric(historic, bikes, file) {
+  var snapshotDate = snapshotDateFromFile(file);
   bikes.forEach(bike => {
     if (!historic[bike.id]) {
       historic[bike.id] = {
@@ -84,14 +102,15 @@ function addBikesToHistoric(historic, bikes) {
       };
     }
 
-    historic[bike.id].prices.push({date: bike.date, price: bike.price});
+    historic[bike.id].prices.push({date: snapshotDate, price: bike.price});
     historic[bike.id].prices = _.sortBy(historic[bike.id].prices, priceAndDate => {
       return priceAndDate.date.getTime();
     });
   });
 }
 
-function addBikesToHistoricByYear(historic, bikes) {
+function addBikesToHistoricByYear(historic, bikes, file) {
+  var snapshotDate = snapshotDateFromFile(file);
   bikes.forEach(bike => {
     if (!historic[bike.year]) {
       historic[bike.year] = {
@@ -99,7 +118,9 @@ function addBikesToHistoricByYear(historic, bikes) {
       };
     }
 
-    var day = bike.date.getFullYear() + '-' + (bike.date.getMonth()+1) + '-' + bike.date.getDate();
+    //var day = bike.date.getFullYear() + '-' + (bike.date.getMonth()+1) + '-' + bike.date.getDate();
+    // we dont want to use the bike date (when it was published), what we want is to group by snapshot date to see the evolution over time
+    var day = snapshotDate.getFullYear() + '-' + (snapshotDate.getMonth()+1) + '-' + snapshotDate.getDate();
     if (!historic[bike.year].prices[day]) {
       historic[bike.year].prices[day] = {
         price: bike.price,

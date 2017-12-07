@@ -115,7 +115,7 @@ function saveFiles(ads) {
 
     fs.writeFileSync(__dirname + '/ads.json', JSON.stringify(controlFile), 'utf8');
     var date = new Date();
-    var dateStr = date.getDate() + '-' + (date.getMonth()+1) + ' ' +
+    var dateStr = date.getDate() + '-' + (date.getMonth()+1) + '-' + date.getFullYear() + ' ' +
                   date.getHours() + ':' + date.getMinutes();
     fs.writeFileSync(__dirname + '/snapshots/snapshot-' + dateStr + '.csv', toCVSFile, 'utf8');
 }
