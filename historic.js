@@ -80,10 +80,20 @@ function snapshotDateFromFile(file) {
   var fileDate = file.replace('snapshot-', '').replace(/\s.+/, '');
   var parts = fileDate.split('-');
   var date = new Date();
-  if (parts.length == 2) { //format without year: 15-12
+  //OLD FORMAT (2017 - 2018)
+  //format without year: 15-12
+  if (parts.length == 2) {
     date.setDate(parseInt(parts[0], 10));
-    date.setMonth(parseInt(parts[1], 10) - 1);
-  } else { //format with year: 15-12-2017
+    var month = parseInt(parts[1], 10);
+    date.setMonth(month - 1);
+    if (month > 6) { // last half of the year = 2017. first half is 2018 more or less
+      date.setYear(2017);
+    } else {
+      date.setYear(2018);
+    }
+  // NEW FORMAT (since March 2018)
+  //format with year: 15-12-2017
+  } else {
     date.setDate(parseInt(parts[0], 10));
     date.setMonth(parseInt(parts[1], 10) - 1);
     date.setYear(parseInt(parts[2], 10));
